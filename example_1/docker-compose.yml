@@ -12,5 +12,5 @@ services:
       - pgdata:/var/lib/postgresql/data
 
 volumes:
-  pdgata:
+  pgdata:
     name: pgdata # making sure same volume will be used in every container
