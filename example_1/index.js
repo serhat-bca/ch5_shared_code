@@ -12,6 +12,15 @@ app.get("/notes", async (req, res) => {
   res.json(notes.rows);
 });
 
+app.post("/notes", async (req, res) => {
+  const result = await pool.query(
+    "insert into notes (content) values ('note from http call') returning * "
+  );
+
+  console.log(result.rows[0]);
+  res.json(result.rows[0]);
+});
+
 app.listen(process.env.PORT, () =>
   console.log(`Server listening on ${process.env.PORT}`)
 );
