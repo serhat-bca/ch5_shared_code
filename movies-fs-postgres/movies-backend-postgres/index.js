@@ -3,6 +3,8 @@ const app = express();
 const cors = require("cors");
 require("dotenv").config(); // to reach environment variables
 
+const sequelize = require("./util/db");
+
 // middleware
 // if there is json body passed with the request
 // it creates a body object and attach it to request object
@@ -104,6 +106,18 @@ app.post("/api/movies", (req, res) => {
   // }
 });
 
-app.listen(port, () => {
-  console.log(`Server listening on port ${port}`);
-});
+const start = async () => {
+  try {
+    await sequelize.authenticate();
+    console.log("DB connection established.");
+
+    await sequelize.sync();
+    app.listen(port, () => {
+      console.log(`Server listening on port ${port}`);
+    });
+  } catch (error) {
+    console.log("Error connecting DB or starting server: ", error);
+  }
+};
+
+start();
