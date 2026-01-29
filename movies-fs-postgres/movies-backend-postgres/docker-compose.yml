@@ -1,0 +1,17 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: postgres-db
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: appuser
+      POSTGRES_PASSWORD: apppassword
+      # Note: no POSTGRES_DB, students will create DBs manually
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata:
+    name: pgdata # explicit name ensures the same volume is used across folders/projects
+
