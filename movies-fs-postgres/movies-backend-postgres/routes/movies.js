@@ -13,60 +13,45 @@ router.get("/", async (req, res) => {
   }
 });
 
-router.get("/api/movies/:id", (req, res) => {
-  const id = req.params.id;
-  const movie = movies.find((m) => m.id == id);
-  if (movie) {
-    res.json(movie);
-  } else {
-    res.status(404).json({ error: "Movie not found" });
+router.get("/test", (req, res) => {
+  res.json({ message: "Test passed" });
+});
+
+router.get("/:id", async (req, res) => {
+  try {
+    const movie = await Movie.findByPk(req.params.id);
+    if (!movie) {
+      res.status(404).json({ message: "Movie not found" });
+    } else {
+      res.json(movie);
+    }
+  } catch (error) {
+    res.status(400).json({ error: error });
   }
 });
 
-router.delete("/api/movies/:id", (req, res) => {
-  const id = req.params.id;
-  console.log("Passed Id: ", id);
-  // find method
-  const movie = movies.find((m) => m.id == id);
-  if (movie) {
-    movies = movies.filter((m) => m.id != id);
-    res.json({ message: `The movie [${movie.title}] is removed` });
-  } else {
-    res.status(404).json({ error: "Movie not found" });
+router.delete("/:id", async (req, res) => {
+  try {
+    const deleted = await Movie.destroy({
+      where: { id: req.params.id },
+    });
+    if (deleted == 0) {
+      res.status(404).json({ message: "Movie not found." });
+    }
+    res.json({ message: "Movie deleted successfully" });
+  } catch (error) {
+    res.status(400).json({error: error})
   }
 });
 
-router.post("/api/movies", (req, res) => {
-  const { title, watchlist } = req.body;
-  if (!title) {
-    return res.status(400).json({ error: "Title is required" });
+router.post("/", async (req, res) => {
+  try {
+    const { title, watchlist } = req.body;
+    const movie = await Movie.create({ title, watchlist });
+    res.status(201).json(movie);
+  } catch (error) {
+    res.status(400).json({ error: error });
   }
-  const movie = {
-    id: Date.now(),
-    title,
-    watchlist: watchlist || false,
-  };
-
-  movies.push(movie);
-  res.status(201).json(movie);
-  // const bodyObject = req.body;
-
-  // const id = Date.now();
-  // const title = bodyObject.title;
-  // const watchlist = bodyObject.watchlist;
-
-  // if(title) {
-  //   const newMovie = {
-  //     title: title,
-  //     watchlist: watchlist || false,
-  //     id: id
-  //   }
-
-  //   movies.push(newMovie);
-  //   res.json(newMovie);
-  // } else {
-  //   res.status(400).json({message:"Title is required"})
-  // }
 });
 
 module.exports = router;

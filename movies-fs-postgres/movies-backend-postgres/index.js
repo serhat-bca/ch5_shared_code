@@ -24,6 +24,8 @@ const reqLogger = (req, res, next) => {
   next();
 };
 app.use(reqLogger);
+// use routes as middleware
+app.use("/api/movies", moviesRouter)
 
 const port = process.env.PORT || 3001;
 
