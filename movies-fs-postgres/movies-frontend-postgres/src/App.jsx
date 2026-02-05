@@ -39,13 +39,18 @@ const App = () => {
         watchlist: false,
         releaseYear: parseInt(releaseYear) || null,
       };
-      // make a post request to json-server
-      const newMovie = await movieService.addMovie(mvObj);
-      setNotification(`A new movie added [${newMovie.title}]`);
+      try {
+        // make a post request to json-server
+        const newMovie = await movieService.addMovie(mvObj);
+        setNotification(`A new movie added [${newMovie.title}]`);
+        setMovielist([...movielist, newMovie]);
+      } catch (error) {
+        const errorMessage = error.response.data.error.errors[0].message;
+        setNotification(`Error: ${errorMessage}`);
+      }
       setTimeout(() => {
         setNotification(null);
       }, 3000);
-      setMovielist([...movielist, newMovie]);
       setMovieName("");
       setReleaseYear("");
       // axios.post("http://localhost:3001/movies", mvObj).then((response) => {
@@ -83,7 +88,7 @@ const App = () => {
 
       // update the movieList state with the updated movie
       setMovielist(
-        movielist.map((m) => (m.id === updatedMovie.id ? updatedMovie : m))
+        movielist.map((m) => (m.id === updatedMovie.id ? updatedMovie : m)),
       );
     } catch (error) {
       alert(`The movie [${movie.title}] is not in server.`);
